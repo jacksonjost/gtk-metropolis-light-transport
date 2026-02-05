@@ -4,58 +4,64 @@
 
 #include <gtk/gtk.h>
 
-static void createTestFile () {
-    FILE* ptr; 
-    ptr = fopen("image/test.ppm", "wb");
-    if (ptr == NULL) {
-        printf("Failed to create file\n");
-        return;
-    }
+typedef struct {
+    int width;
+    int height;
+    unsigned char * data;
+    int size;
+} PixelMap;
 
-    int width = 500;
-    int height = 500;
+static PixelMap * createPixelMap (int width, int height) {
+    int sizeOfRGBA = 4;
+    PixelMap * newPixels = malloc (sizeof(PixelMap));
 
-    fprintf(ptr, "P6\n%d %d\n255\n", width, height);
-    unsigned char colors [3];
-    memset(colors, 0, 3 * sizeof(unsigned char));
-    
-    for (int y = 0; y < height; ++ y) {
-        for (int x = 0; x < width; ++ x) {
-            colors [0] = (unsigned char)(x + y) % 256;    
-            colors [1] = (unsigned char)(x + y) % 256;
-            colors [2] = (unsigned char)(x + y) % 256;
+    newPixels->width = width;
+    newPixels->height = height;
+    newPixels->size = width * height * sizeOfRGBA;
+    newPixels->data = malloc (newPixels->size);
 
-            fwrite(colors, 1, 3, ptr);
+    for (int x = 0; x < width; ++ x) {
+        for (int y = 0; y < height; ++ y) {
+            int index = (x + y * width ) * 4;
+            for (int i = 0; i < 4; i ++) {
+                newPixels->data [index + i] = (x + y)% 255;
+            }
         }
     }
+    return newPixels;
 
-    fclose(ptr);
 }
 
 
 static void activate(GtkApplication * app, gpointer user_data) {
     GtkWidget * window;
-    GtkWidget * box;
     GtkWidget * picture;
+    int width = 500; 
+    int height = 500;
 
     window = gtk_application_window_new(app);
-    gtk_window_set_title(GTK_WINDOW(window), "Window");
-    gtk_window_set_default_size(GTK_WINDOW(window), 500, 500);
+    gtk_window_set_title(GTK_WINDOW(window), "GdkTexture Test");
+    gtk_window_set_default_size(GTK_WINDOW(window), width, height);
 
-    box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-    gtk_widget_set_halign(box, GTK_ALIGN_CENTER);
-    gtk_widget_set_valign(box, GTK_ALIGN_CENTER);
+    picture = gtk_picture_new();
 
-    gtk_window_set_child(GTK_WINDOW(window), box);
+    PixelMap * pixels = createPixelMap (width, height);
+    // Note: the g_bytes_new_with_free_func calls the free function on the data pointer
+    GBytes * pixelMapByteData = g_bytes_new_with_free_func (pixels->data, pixels->size, free, NULL);
 
-    picture = gtk_picture_new_for_filename("image/test.ppm");
-    gtk_box_append(GTK_BOX(box), picture);
+    GdkTexture * texture = gdk_memory_texture_new (pixels->width, pixels->height, GDK_MEMORY_R8G8B8A8, pixelMapByteData, pixels->width * 4);
+
+    gtk_picture_set_paintable (GTK_PICTURE(picture), GDK_PAINTABLE(texture));
+    gtk_window_set_child(GTK_WINDOW(window), picture);
+
+    g_bytes_unref(pixelMapByteData);
+    g_object_unref(texture);
+    free(pixels);
 
     gtk_window_present(GTK_WINDOW (window));
 }
 
 int main (int argc, char ** argv) {
-    createTestFile();
 
     GtkApplication * app;
 
