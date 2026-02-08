@@ -51,7 +51,6 @@ GtkDisplay * createDisplay (int width, int height) {
     return newDisplay;
 }
 
-
 void runDisplay (GtkDisplay * self, int argc, char ** argv) {
     g_signal_connect(self->app, "activate", G_CALLBACK(activate), self);
     g_application_run(G_APPLICATION(self->app), argc, argv);

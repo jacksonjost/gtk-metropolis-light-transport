@@ -1,6 +1,5 @@
 #include "display.h"
-#include "vectorMath.h"
-#include <gtk/gtk.h>
+#include "ray.h"
 
 PixelMap * generateTestPixelMap (int width, int height) {
     PixelMap * newPixels = malloc (sizeof(PixelMap));
