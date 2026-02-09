@@ -1,21 +1,27 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include "vectorMath.h"
+#include "geometry.h"
+
+#define RAY_EPSILON 1e-4
 
 typedef struct {
     Point origin;
     Vector vector;
 } Ray;
 
-
 typedef struct {
-    Point p1, p2, p3;
-    Vector edge1, edge2, edge3;
-} Triangle;
+    double distance;
+    Point intersection;
+    Vector normal;
+    int materialId;
+} HitRecord;
 
-Triangle createTriangle (Point p1, Point p2, Point p3);
 double triangleIntersection (Triangle triangle, Ray ray);
 Ray getReflectedRay (Triangle triangle, Ray ray);
+
+int getTriangleHit (Triangle triangle, Ray ray, double minDist, double maxDist, HitRecord * record);
+int getSphereHit (Sphere sphere, Ray ray, double minDist, double maxDist, HitRecord * record);
+int getSceneHit (Scene scene, Ray ray, HitRecord * record);
 
 #endif
