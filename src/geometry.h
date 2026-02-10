@@ -32,10 +32,16 @@ typedef struct {
 typedef struct {
     Triangle * triangles;
     int numTriangles;
+
+
     Sphere * spheres;
     int numSpheres;
+
+    
     Material * materials;
     int numMaterials;
+
+
     Point boundingBoxMin;
     Point boundingBoxMax;
     Point lightVertex;
