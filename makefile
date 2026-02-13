@@ -1,9 +1,9 @@
 COMPILER = gcc
 CFLAGS = $(shell pkg-config --cflags gtk4) -Wall
 LDFLAGS = -mwindows
-LIBS = $(shell pkg-config --libs gtk4) -lm
+LIBS = $(shell pkg-config --libs gtk4) -lm -lkernel32
 TARGET = bin/main
-SOURCE = src/main.c src/display.c src/vectorMath.c src/ray.c src/rand.c
+SOURCE = src/main.c src/display.c src/vectorMath.c src/ray.c src/rand.c src/camera.c src/geometry.c
 
 $(TARGET): $(SOURCE)
 	mkdir -p bin
