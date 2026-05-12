@@ -143,23 +143,18 @@ void detectLight (Scene * scene) {
         }
 
         if (found) {
+            scene->lightVertex = t0->p1;
             scene->lightEdge1 = getVector (t0->p1, t0->p2);
             scene->lightEdge2 = getVector (t0->p1, uniqueVertex);
-
-            Point lightCorner = t0->p1;
-            Vector halfE1 = scaleVector(scene->lightEdge1, 0.5);
-            Vector halfE2 = scaleVector(scene->lightEdge2, 0.5);
-            scene->lightVertex = movePoint(lightCorner, addVector(halfE1, halfE2));
-
             scene->lightNormal = t0->normal;
             scene->lightArea = vectorLength (crossProduct (scene->lightEdge1, scene->lightEdge2));
             scene->hasLight = true;
         }
     } else if (numLightTriangles == 1) {
         Triangle * t = &scene->triangles[lightTriangles[0]];
+        scene->lightVertex = t->p1;
         scene->lightEdge1 = getVector (t->p1, t->p2);
         scene->lightEdge2 = getVector (t->p1, t->p3);
-        scene->lightVertex = t->p1;
         scene->lightNormal = t->normal;
         scene->lightArea = 0.5 * vectorLength (crossProduct (scene->lightEdge1, scene->lightEdge2));
         scene->hasLight = true;

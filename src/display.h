@@ -14,7 +14,6 @@ typedef struct _GtkDisplay GtkDisplay;
 
 GtkDisplay * createDisplay (int width, int height);
 void runDisplay (GtkDisplay * self, int argc, char ** argv);
-void setPixelMap (GtkDisplay * self, PixelMap * map);
 void cleanDisplay (GtkDisplay * self);
 
 
